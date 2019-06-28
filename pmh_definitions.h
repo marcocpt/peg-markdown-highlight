@@ -100,7 +100,7 @@ struct pmh_Element
 {
     pmh_element_type type;    /**< \brief Type of element */
     unsigned long pos;        /**< \brief Unicode code point offset marking the
-                                          beginning of this element in the
+                                          beginning of this element in theπ
                                           input. */
     unsigned long end;        /**< \brief Unicode code point offset marking the
                                           end of this element in the input. */

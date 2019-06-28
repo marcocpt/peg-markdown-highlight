@@ -15,14 +15,16 @@
 
 @implementation MDHExampleAppDelegate
 
-
+// ✅
 - (void) awakeFromNib
 {
 	[delaySlider setFloatValue:0.25];
 	[delayLabel setFloatValue:ROUND_QUARTER([delaySlider floatValue])];
 }
 
-
+/**
+ * \brief 设置渲染类型
+ */
 - (void) setTextView1Styles:(NSString *)styleName
 {
     _textView1.font = [NSFont fontWithName:@"Courier" size:12];
@@ -65,6 +67,9 @@
 	[hl1 highlightNow];
 }
 
+/**
+ * \brief ✅在包中搜索`.style`类型文件（主题文件），来更新下拉菜单中的内容
+ */
 - (void) populateStylesPopUpButton
 {
 	[stylePopUpButton removeAllItems];
@@ -76,6 +81,13 @@
 		[stylePopUpButton addItemWithTitle:[[file lastPathComponent] stringByDeletingPathExtension]];
 }
 
+/**
+ *  \brief ✅Make sure to disable automatic text replacement (and other fancy
+ * features) in the second text view; since it won't update automatically,
+ * the highlighting will get messed up when the automatic text replacement
+ * kicks in and starts messing with the text after the initial
+ * highlighting has already been done:
+ */
 - (void) disableFancyFeaturesInTextView:(NSTextView *)tv
 {
     tv.automaticTextReplacementEnabled = NO;
