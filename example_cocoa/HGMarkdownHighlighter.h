@@ -83,7 +83,11 @@ typedef void(^HGStyleParsingErrorCallback)(NSArray *errorMessages);
 /** \brief The extensions to use for parsing.
  * 
  * A bitfield of pmh_extensions values.
- * 
+ *
+ * Note: 表示是否支持扩展语法：footnotes 和 strikeout
+ *
+ * // FIXME: pmh_EXT_NONE 和 pmh_EXT_NOTES 反了 ？
+ *
  * \sa pmh_extensions
  */
 @property int extensions;

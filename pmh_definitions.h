@@ -112,6 +112,8 @@ typedef struct pmh_Element pmh_element;
 
 /**
 * \brief Bitfield enumeration of supported Markdown extensions.
+*
+* // FIXME: pmh_EXT_NONE 和 pmh_EXT_NOTES 反了 ？？
 */
 enum pmh_extensions
 {

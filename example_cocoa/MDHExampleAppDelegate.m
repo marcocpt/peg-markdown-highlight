@@ -23,7 +23,11 @@
 }
 
 /**
- * \brief 设置渲染类型
+ * \brief 设置渲染类型并高亮显示
+ *
+ * 如果是 Default 主题，设置
+ *
+ * 否则，
  */
 - (void) setTextView1Styles:(NSString *)styleName
 {
@@ -103,6 +107,7 @@
     tv.enabledTextCheckingTypes = 0;
 }
 
+//
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	[self populateStylesPopUpButton];
@@ -133,8 +138,8 @@
 	hl1 = [[HGMarkdownHighlighter alloc] initWithTextView:_textView1
 											 waitInterval:[delaySlider intValue]];
 	hl1.makeLinksClickable = YES;
-    hl1.extensions = pmh_EXT_STRIKE;
-	[self styleSelected:self];
+    hl1.extensions = pmh_EXT_NOTES;
+    [self styleSelected:self];
 	[hl1 activate];
 	
 	hl2 = [[HGMarkdownHighlighter alloc] init];
@@ -143,12 +148,13 @@
 	[hl2 activate];
 }
 
+// ✅
 - (IBAction) styleSelected:(id)sender
 {
 	[self setTextView1Styles:[[stylePopUpButton selectedItem] title]];
 }
 
-
+// ✅
 - (IBAction) delaySliderMove:(id)sender
 {
 	float interval = ROUND_QUARTER([delaySlider floatValue]);
@@ -156,6 +162,7 @@
 	hl1.waitInterval = interval;
 }
 
+//
 - (IBAction) manualHighlightButtonPress:(id)sender
 {
 	[hl2 parseAndHighlightNow];

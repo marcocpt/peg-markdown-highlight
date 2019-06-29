@@ -67,6 +67,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	return self;
 }
 
+// ✅
 - (instancetype) initWithTextView:(NSTextView *)textView
 {
 	if (!(self = [self init]))
@@ -75,6 +76,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	return self;
 }
 
+// ✅
 - (instancetype) initWithTextView:(NSTextView *)textView
 		   waitInterval:(NSTimeInterval)interval
 {
@@ -84,6 +86,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	return self;
 }
 
+// ✅
 - (instancetype) initWithTextView:(NSTextView *)textView
 		   waitInterval:(NSTimeInterval)interval
 				 styles:(NSArray *)inStyles
@@ -263,6 +266,10 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 		[textStorage removeAttribute:NSForegroundColorAttributeName range:range];
 }
 
+/**
+ * ✅从当前的 TextView 中读取字体、颜色等属性，保存到 _clearFontTraitMask、
+ * self.defaultTextColor 和 self.defaultTypingAttributes 中
+ */
 - (void) readClearTextStylesFromTextView
 {
 	_clearFontTraitMask = [self getClearFontTraitMask:
@@ -351,6 +358,11 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	[[self.targetTextView textStorage] endEditing];
 }
 
+/**
+ *  \brief 只高亮处理可见的范围
+ *
+ * 使用 NSClipView.documentVisibleRect 属性获取可见的区域
+ */
 - (void) applyVisibleRangeHighlighting
 {
 	NSRect visibleRect = [[[self.targetTextView enclosingScrollView] contentView] documentVisibleRect];
@@ -424,6 +436,10 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
     [[NSRunLoop currentRunLoop] addTimer:self.updateTimer forMode:NSRunLoopCommonModes];
 }
 
+/**
+ * \brief ✅ 响应 NSViewBoundsDidChangeNotification，当 textView 已经滚动时对可见
+ * 区域进行高亮。
+ */
 - (void) textViewDidScroll:(NSNotification *)notification
 {
 	if (_cachedElements == NULL)
@@ -431,7 +447,9 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	[self applyVisibleRangeHighlighting];
 }
 
-
+/**
+ * \brief ✅ 获得默认的 style 定义
+ */
 - (NSArray *) getDefaultStyles
 {
 	static NSArray *defaultStyles = nil;
@@ -483,6 +501,10 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	_styleDependenciesPending = NO;
 }
 
+/**
+ * ✅ 设置新的 style 定义, 如果为空，就设为默认的 style。然后如果
+ * self.targetTextView != nil，则执行 applyStyleDependenciesToTargetTextView
+ */
 - (void) setStyles:(NSArray *)newStyles
 {
 	NSArray *stylesToApply = (newStyles != nil) ? newStyles : [self getDefaultStyles];
@@ -666,6 +688,9 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	[self requestParsing];
 }
 
+/**
+ *  ✅ 调用 applyVisibleRangeHighlighting
+ */
 - (void) highlightNow
 {
 	[self applyVisibleRangeHighlighting];
@@ -677,6 +702,8 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	
 	if (self.styles == nil)
 		self.styles = [self getDefaultStyles];
+    // 设定 style 时未指定 targetTextView 会设置 _styleDependenciesPending 为true。
+    // (在 `- (void) setStyles:(NSArray *)newStyles` 中）
 	if (_styleDependenciesPending)
 		[self applyStyleDependenciesToTargetTextView];
 	
