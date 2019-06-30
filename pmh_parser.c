@@ -127,8 +127,8 @@ typedef struct
 
 
 /**
- ✅ 使用 pmh_realelement 来生成 parser_data
- @
+ ✅ 使用 pmh_realelement 来生成 parser_data。
+ @discussion 如果 head_elems 为空，则按 pmh_NUM_TYPES 分配内存
  @param original_input The original, unmodified UTF-8 input
  @param strip_positions The offsets of the bytes we have stripped from original_input
  @param strip_positions_len strip positions len
@@ -515,8 +515,8 @@ static int strcpy_preformat(char *str, char **out,
 
 
 /**
- 执行 strcpy_preformat 将文本进行格式化，记录 strip 信息，
-
+ ✅ 执行 strcpy_preformat 将文本进行格式化，记录 strip 信息，然后转换数据为 p_data，使用这
+ 个数据进行解析
  */
 void pmh_markdown_to_elements(char *text, int extensions,
                               pmh_element **out_result[])

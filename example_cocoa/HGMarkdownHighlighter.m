@@ -37,7 +37,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	NSMutableArray *_styleParsingErrors;
 }
 
-@property(strong) NSTimer *updateTimer;
+@property(strong) NSTimer *updateTimer;     /**< 更新定时器 */
 @property(copy) NSColor *defaultTextColor;
 @property(strong) NSThread *workerThread;
 @property(strong) NSDictionary *defaultTypingAttributes;
@@ -101,7 +101,9 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 
 #pragma mark -
 
-
+/**
+ ✅ 利用 _currentHighlightText 来解析 markdown 的元素，并按位置排序
+ */
 - (pmh_element **) parse
 {
 	pmh_element **result = NULL;
@@ -110,11 +112,13 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	return result;
 }
 
-
-// Convert unicode code point offsets (this is what we get from the parser) to
-// NSString character offsets (NSString uses UTF-16 units as characters, so
-// sometimes two characters (a "surrogate pair") are needed to represent one
-// code point):
+/**
+ ✅ Convert unicode code point offsets (this is what we get from the parser) to
+ NSString character offsets (NSString uses UTF-16 units as characters, so
+ sometimes two characters (a "surrogate pair") are needed to represent one
+ code point):
+ @note surrogate pair: 参考 https://objccn.io/issue-9-1/
+ */
 - (void) convertOffsets:(pmh_element **)elements
 {
     // Walk through the whole string only once, and gather all surrogate pair indexes
@@ -170,7 +174,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
     }
 }
 
-
+/** ✅ 执行解析，并调用 convertOffsets 转换偏移，然后在主线程调用 parserDidParse： */
 - (void) threadParseAndHighlight
 {
 	@autoreleasepool {
@@ -183,7 +187,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
          waitUntilDone:YES];
 	}
 }
-
+/** ✅ 线程结束移除通知，清除数据 */
 - (void) threadDidExit:(NSNotification *)notification
 {
 	[[NSNotificationCenter defaultCenter]
@@ -200,7 +204,11 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
          waitUntilDone:NO];
     }
 }
-
+/**
+ * \brief ✅ 开一个线程处理解析和高亮，线程执行方法：threadParseAndHighlight, 注册通知
+ * NSThreadWillExitNotification 执行 threadDidExit: 。启动线程前会将 targetTextViewd
+ * 的 string 复制给 _currentHighlightText 。
+ */
 - (void) requestParsing
 {
 	if (self.workerThread != nil) {
@@ -249,7 +257,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	}
 	return traitsToApply;
 }
-
+/** ✅ 清除范围内的文字属性 */
 - (void) clearHighlightingForRange:(NSRange)range
 {
 	NSTextStorage *textStorage = [_targetTextView textStorage];
@@ -289,7 +297,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 		typingAttrs[NSParagraphStyleAttributeName] = [self.targetTextView defaultParagraphStyle];
 	self.defaultTypingAttributes = typingAttrs;
 }
-
+/** ✅ 在指定范围应用高亮 */
 - (void) applyHighlighting:(pmh_element **)elements withRange:(NSRange)range
 {
 	NSUInteger rangeEnd = NSMaxRange(range);
@@ -359,7 +367,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 }
 
 /**
- *  \brief 只高亮处理可见的范围
+ * ✅ \brief 只高亮处理可见的范围
  *
  * 使用 NSClipView.documentVisibleRect 属性获取可见的区域
  */
@@ -389,7 +397,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	[self clearHighlightingForRange:NSMakeRange(0, [[self.targetTextView textStorage] length])];
 }
 
-
+/** ✅ _cachedElements 先释放占用的内存，再赋值*/
 - (void) cacheElementList:(pmh_element **)list
 {
 	if (_cachedElements != NULL) {
@@ -405,7 +413,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 }
 
 
-
+/** ✅ 缓存 pmh_element，然后调用 applyVisibleRangeHighlighting */
 - (void) parserDidParse:(NSValue *)resultPointer
 {
 	if (_workerThreadResultsInvalid)
@@ -414,14 +422,14 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	[self applyVisibleRangeHighlighting];
 }
 
-
+/** ✅ 定时器到后清除定时器并执行 requestParsing */
 - (void) textViewUpdateTimerFire:(NSTimer*)timer
 {
 	self.updateTimer = nil;
 	[self requestParsing];
 }
 
-
+/** ✅ 编辑文本时执行。使用定时器延时绚烂 */
 - (void) textViewTextDidChange:(NSNotification *)notification
 {
 	if (self.updateTimer != nil)
@@ -482,13 +490,15 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	return defaultStyles;
 }
 
+/**
+ * \brief ✅ Set NSTextView link styles to match the styles set for
+ * LINK elements, with the "pointing hand cursor" style added
+ */
 - (void) applyStyleDependenciesToTargetTextView
 {
 	if (self.targetTextView == nil)
 		return;
 	
-	// Set NSTextView link styles to match the styles set for
-	// LINK elements, with the "pointing hand cursor" style added:
 	for (HGMarkdownHighlightingStyle *style in self.styles)
 	{
 		if (style.elementType != pmh_LINK)
@@ -695,28 +705,28 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 {
 	[self applyVisibleRangeHighlighting];
 }
-
+// ✅
 - (void) activate
 {
 	// todo: throw exception if targetTextView is nil?
 	
 	if (self.styles == nil)
 		self.styles = [self getDefaultStyles];
-    // 设定 style 时未指定 targetTextView 会设置 _styleDependenciesPending 为true。
-    // (在 `- (void) setStyles:(NSArray *)newStyles` 中）
+  // 设定 style 时未指定 targetTextView 会设置 _styleDependenciesPending 为true。
+  // (在 `- (void) setStyles:(NSArray *)newStyles` 中）
 	if (_styleDependenciesPending)
 		[self applyStyleDependenciesToTargetTextView];
 	
 	[self requestParsing];
 	
-    if (self.parseAndHighlightAutomatically)
-    {
-        [[NSNotificationCenter defaultCenter]
-         addObserver:self
-         selector:@selector(textViewTextDidChange:)
-         name:NSTextDidChangeNotification
-         object:self.targetTextView];
-    }
+  if (self.parseAndHighlightAutomatically)
+  {
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(textViewTextDidChange:)
+     name:NSTextDidChangeNotification
+     object:self.targetTextView];
+  }
 	
 	NSScrollView *scrollView = [self.targetTextView enclosingScrollView];
 	if (scrollView != nil)

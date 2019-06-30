@@ -25,7 +25,7 @@
 /**
  * \brief 设置渲染类型并高亮显示
  *
- * 如果是 Default 主题，设置
+ * 如果是 Default 主题，设置 textView1 属性，并设置 hl1
  *
  * 否则，
  */
