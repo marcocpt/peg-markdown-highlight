@@ -3,8 +3,6 @@
 *.dSYM
 *.plist
 *.pyc
-pmh_parser.c
-pmh_parser_core.c
 tester
 multithread_tester
 highlighter
