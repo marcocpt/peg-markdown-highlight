@@ -23,11 +23,11 @@
 }
 
 /**
- * \brief 设置渲染类型并高亮显示
- *
- * 如果是 Default 主题，设置 textView1 属性，并设置 hl1
- *
- * 否则，
+@brief 设置渲染类型并执行渲染
+ 
+如果是 Default 主题，设置 textView1 属性，并调用
+@code [hl1 readClearTextStylesFromTextView] @endcode
+否则，
  */
 - (void) setTextView1Styles:(NSString *)styleName
 {

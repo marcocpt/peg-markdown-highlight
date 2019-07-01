@@ -52,7 +52,7 @@ typedef enum
     pmh_attr_type_font_size_pt,     /**< Font size (in points) */
     pmh_attr_type_font_family,      /**< Font family */
     pmh_attr_type_font_style,       /**< Font style */
-    pmh_attr_type_strike_color,     /**< Strike-through color */
+    pmh_attr_type_strike_color,     /**< Strike-through color 删除线颜色 */
     pmh_attr_type_other             /**< Arbitrary custom attribute */
 } pmh_attr_type;
 
@@ -106,37 +106,35 @@ typedef struct
     pmh_style_attribute **element_styles;
 } pmh_style_collection;
 
-
 /**
-* \brief Parse stylesheet string, return style collection
-* 
-* \param[in] input                   The stylesheet string to parse.
-* \param[in] error_callback          Callback function to be called when errors
-*                                    occur during parsing. The first argument
-*                                    to the callback function is the error
-*                                    message and the second one the line number
-*                                    in the original input where the error
-*                                    occurred. The last argument will always
-*                                    get the value you pass in for the
-*                                    error_callback_context argument to this
-*                                    function.
-*                                    Pass in NULL to suppress error reporting.
-* \param[in] error_callback_context  Arbitrary context pointer for the error
-*                                    callback function; will be passed in as
-*                                    the last argument to error_callback.
-* 
-* \return A pmh_style_collection. You must pass this value to
-*         pmh_free_style_collection() when it's not needed anymore.
-*/
+ Parse stylesheet string, return style collection
+
+ @param input                       The stylesheet string to parse.
+ @param error_callback              Callback function to be called when errors
+                                    occur during parsing. The first argument
+                                    to the callback function is the error
+                                    message and the second one the line number
+                                    in the original input where the error
+                                    occurred. The last argument will always
+                                    get the value you pass in for the
+                                    error_callback_context argument to this
+                                    function.
+                                    Pass in NULL to suppress error reporting.
+ @param error_callback_context      Arbitrary context pointer for the error
+                                    callback function; will be passed in as
+                                    the last argument to error_callback.
+ @return    A pmh_style_collection. You must pass this value to
+            pmh_free_style_collection() when it's not needed anymore.
+ */
 pmh_style_collection *pmh_parse_styles(char *input,
                                        void(*error_callback)(char*,int,void*),
                                        void *error_callback_context);
 
 /**
 * \brief Free a pmh_style_collection.
-* 
+*
 * Frees a pmh_style_collection value returned by pmh_parse_styles().
-* 
+*
 * \param[in] collection  The collection to free.
 */
 void pmh_free_style_collection(pmh_style_collection *collection);

@@ -196,6 +196,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	 object:self.workerThread];
 	_currentHighlightText = nil;
 	self.workerThread = nil;
+    // TODO: _workerThreadResultsInvalid 什么情况为 YES？
 	if (_workerThreadResultsInvalid)
     {
         [self
@@ -237,7 +238,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 #pragma mark -
 
 
-
+/** ✅ 在当前的字体特征掩码中添加 斜体、非斜体；粗体、非粗体；压缩、伸展 的反向字体掩码 */
 - (NSFontTraitMask) getClearFontTraitMask:(NSFontTraitMask)currentFontTraitMask
 {
 	static NSDictionary *oppositeFontTraits = nil;	
@@ -526,7 +527,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	else
 		_styleDependenciesPending = YES;
 }
-
+/** ✅ */
 - (NSDictionary *) getDefaultSelectedTextAttributes
 {
 	static NSDictionary *cachedValue = nil;
@@ -553,7 +554,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	}
 	[_styleParsingErrors addObject:messageToAdd];
 }
-
+/**  */
 - (void) applyStylesFromStylesheet:(NSString *)stylesheet
                   withErrorHandler:(HGStyleParsingErrorCallback)errorHandler
 {
@@ -570,7 +571,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	else
 	{
 		[_styleParsingErrors removeAllObjects];
-		style_coll = pmh_parse_styles(c_stylesheet, &styleparsing_error_callback, (__bridge void *)(self));
+        style_coll = pmh_parse_styles(c_stylesheet, &styleparsing_error_callback, (__bridge void *)(self));
 		if ([_styleParsingErrors count] > 0)
             errorHandler(_styleParsingErrors);
 	}
@@ -680,7 +681,7 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	[self highlightNow];
 }
 
-
+/** ✅ 设置 _targetTextView 并调用 readClearTextStylesFromTextView */
 - (void) setTargetTextView:(NSTextView *)newTextView
 {
 	if (_targetTextView == newTextView)
